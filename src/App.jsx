@@ -208,23 +208,7 @@ export default function PropertyAlphaDashboard() {
   const handleAI = async () => {
     if (!aiQuery.trim()) return;
     setAiLoading(true);
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-5",
-          max_tokens: 1000,
-          system: `You are the PropertyAlpha AI advisor. You analyze smart building data for multifamily properties. Current portfolio: ${PROPERTIES.map(p => `${p.name} (${p.city}, ${p.state}) - ${p.units} units, Score: ${p.score}/100, NOI Impact: $${p.noiImpact}/yr`).join("; ")}. Selected property: ${selectedProperty.name} with tech stack: WiFi ${selectedProperty.tech.wifi.installed ? "active" : "not installed"}, Access ${selectedProperty.tech.access.installed ? "active" : "not installed"}, IoT ${selectedProperty.tech.iot.installed ? "active" : "not installed"}, EV ${selectedProperty.tech.ev.installed ? "active" : "not installed"}. Respond concisely with specific ROI data and actionable recommendations. Use dollar amounts.`,
-          messages: [{ role: "user", content: aiQuery }],
-        }),
-      });
-      const data = await res.json();
-      const text = data.content?.map(c => c.text || "").join("\n") || "Unable to process request.";
-      setAiResponse(text);
-    } catch (e) {
-      setAiResponse("AI engine offline. In production, this connects to Claude API for real-time recommendations.");
-    }
+    setAiResponse("AI Advisor is temporarily offline while PropertyAlpha moves model requests behind a secure server-side gateway. Portfolio analytics remain available.");
     setAiLoading(false);
   };
 
@@ -464,7 +448,7 @@ export default function PropertyAlphaDashboard() {
         {view === "ai" && (
           <div>
             <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px" }}>AI Advisor</h1>
-            <p style={{ fontSize: 14, color: COLORS.textSecondary, margin: "0 0 28px" }}>Ask anything about your portfolio · Powered by Claude</p>
+            <p style={{ fontSize: 14, color: COLORS.textSecondary, margin: "0 0 28px" }}>Advisor temporarily offline for security maintenance</p>
             <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
               {["How do I increase NOI at 319 Peabody?", "Which property has the biggest opportunity?", "What should I install next?"].map(q => (
                 <button key={q} onClick={() => { setAiQuery(q); }} style={{ padding: "8px 14px", borderRadius: 8, border: `1px solid ${COLORS.border}`, background: COLORS.card, color: COLORS.textSecondary, cursor: "pointer", fontSize: 11 }}>{q}</button>
